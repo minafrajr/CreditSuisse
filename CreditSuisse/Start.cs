@@ -46,9 +46,8 @@ namespace CreditSuisse
 
                 Console.WriteLine("Process finished!");
 
-                Console.ReadLine();
                 Console.WriteLine("Press ENTER button to close...");
-
+                Console.ReadLine();
             }
             catch (Exception e)
             {

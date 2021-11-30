@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using CreditSuisse.Const;
 using CreditSuisse.Interfaces;
 
 namespace CreditSuisse.Services
@@ -9,20 +10,49 @@ namespace CreditSuisse.Services
     public class TradeService
     {
         private Trade trade;
-        private List<Trade> tradesList;
+        private List<Trade> tradeList;
+        private Categories categories;
+        private List<string> categoryList;
 
-        public string Categorize(string inputFile)
+        public List<string> Categorize(string inputFile)
         {
-            tradesList = GetTrades(inputFile);
-
             try
             {
-                foreach (Trade tradeItem in tradesList)
+                categoryList = new List<string>();
+
+                GetTrades(inputFile);
+
+                foreach (Trade tradeItem in tradeList)
                 {
-                    //todo analizar as trades (Expired  HighRisk MediumRisk)
+                    categories = IsExpired(tradeItem) ? Categories.EXPIRED : CalculateRisk(tradeItem);
+
+                    categoryList.Add(categories.ToString());
                 }
 
+                return categoryList;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="trade"></param>
+        /// <returns></returns>
+        private Categories CalculateRisk(Trade trade)
+        {
+            try
+            {
+                if (trade.Value > 1000000 && trade.ClientSector == "Private")
+                    return Categories.HIGHRISK;
 
+                if (trade.Value > 1000000 && trade.ClientSector == "Public")
+                    return Categories.MEDIUMRISK;
+
+                return Categories.UNDEFINED;
 
             }
             catch (Exception e)
@@ -30,13 +60,33 @@ namespace CreditSuisse.Services
                 Console.WriteLine(e);
                 throw;
             }
-
-            return null;
         }
+
+        /// <summary>
+        /// Calculate the diference in days between reference date and next payment date
+        /// </summary>
+        /// <param name="trade">The trade</param>
+        /// <returns>true: the payment date is late by more than 30 days based on a reference date| false: the payment date is update based on a reference date</returns>
+        private bool IsExpired(ITrade trade)
+        {
+            try
+            {
+                if (trade.ReferenceDate.Subtract(trade.NextPaymentDate).TotalDays > 30)
+                    return true;
+
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
 
         private List<Trade> GetTrades(string inputFile)
         {
-            var tradesList = new List<Trade>();
+            tradeList = new List<Trade>();
 
             try
             {
@@ -49,7 +99,7 @@ namespace CreditSuisse.Services
 
                 if (!File.Exists(inputFile))
                     throw new FileNotFoundException();
-                
+
                 char[] delim = { ' ' };
                 var campoObrigatorio = true;
                 DateTime referenceDate;
@@ -59,7 +109,7 @@ namespace CreditSuisse.Services
                 {
                     while (text.Peek() >= 0)
                     {
-                        trade = new Trade();
+
 
                         var line = text.ReadLine(); //read each line 
 
@@ -81,12 +131,13 @@ namespace CreditSuisse.Services
                                     if (line.Equals("")) line = text.ReadLine();
 
                                     arrStrings = line.Split(delim, StringSplitOptions.None);
+                                    trade = new Trade();
                                     trade.ReferenceDate = referenceDate;
                                     trade.Value = Convert.ToDouble(arrStrings[0]);
                                     trade.ClientSector = arrStrings[1];
                                     trade.NextPaymentDate = Convert.ToDateTime(arrStrings[2], new CultureInfo("en-US"));
 
-                                    tradesList.Add(trade);
+                                    tradeList.Add(trade);
                                 }
                             }
                         }
@@ -98,7 +149,7 @@ namespace CreditSuisse.Services
                 Console.WriteLine(e);
                 throw;
             }
-            return tradesList;
+            return tradeList;
         }
     }
 }

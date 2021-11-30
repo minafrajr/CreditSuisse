@@ -15,12 +15,15 @@ namespace CreditSuisse
         {
             try
             {
-                TradeService tradeService = new TradeService();
-                ConfigService config = new ConfigService();
+                var tradeService = new TradeService();
+                var config = new ConfigService();
+                var outputLog = new OutputLog();
 
                 var inputFile = config.GetConfiguration<string>(Consts.inputFilePath);
-                
 
+                var categoriesList = tradeService.Categorize(inputFile);
+
+                outputLog.WriteOutputLog(categoriesList);
             }
             catch (Exception e)
             {

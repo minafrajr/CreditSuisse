@@ -1,5 +1,5 @@
 ﻿namespace CreditSuisse.Const
 {
     public enum Categories
-    { EXPIRED, HIGHRISK, MEDIUMRISK }
+    { EXPIRED, HIGHRISK, MEDIUMRISK, UNDEFINED }
 }

@@ -8,7 +8,7 @@ namespace CreditSuisse.Interfaces
 {
     public interface IOutputLog
     {
-        void WriteOutputLog(string message);
+        void WriteOutputLog(List<string> outputMessage);
 
     }
 }

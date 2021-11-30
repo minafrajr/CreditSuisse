@@ -11,22 +11,24 @@ namespace CreditSuisse.Services
 {
     public class OutputLog : IOutputLog
     {
-        public void WriteOutputLog(string message)
+        public void WriteOutputLog(List<string> outputMessage)
         {
-            IConfigServices config;
             try
             {
-                if (string.IsNullOrWhiteSpace(message))
+                if (outputMessage.Count<1)
                     throw new ArgumentNullException();
 
-                config = new ConfigService();
+                IConfigServices config = new ConfigService();
 
                 var outputFilePath = config.GetConfiguration<string>(Consts.outputFilePath);
                 
-                var fs = new FileStream(outputFilePath, FileMode.Append);
+                var fs = new FileStream(outputFilePath, FileMode.Create);
                 using (var escritor = new StreamWriter(fs))
                 {
-                    escritor.WriteLine($"{message}");
+                    foreach (string message in outputMessage)
+                    {
+                        escritor.WriteLine($"{message}");
+                    }
                 }
                 fs.Close();
             }

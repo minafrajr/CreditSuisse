@@ -19,11 +19,36 @@ namespace CreditSuisse
                 var config = new ConfigService();
                 var outputLog = new OutputLog();
 
+                Console.WriteLine("**************** WELCOME TO CREDIT SUISSE TRADE CATEGORIZATION PROGRAM **********************");
+
+                Console.WriteLine();
+                Console.WriteLine();
+                Console.WriteLine();
+
+                Console.WriteLine("Press ENTER button to start...");
+                Console.ReadLine();
+
+                Console.WriteLine("Collecting configurations...");
                 var inputFile = config.GetConfiguration<string>(Consts.inputFilePath);
 
-                var categoriesList = tradeService.Categorize(inputFile);
+                Console.WriteLine("Press ENTER to continue...");
+                Console.ReadLine();
 
+                Console.WriteLine("Acquiring portfolio and categorizing trades...");
+                var categoriesList = tradeService.Categorize(inputFile);
+                
+                Console.WriteLine("Press ENTER to continue...");
+                Console.ReadLine();
+
+                Console.WriteLine("Writing output file..");
                 outputLog.WriteOutputLog(categoriesList);
+
+
+                Console.WriteLine("Process finished!");
+
+                Console.ReadLine();
+                Console.WriteLine("Press ENTER button to close...");
+
             }
             catch (Exception e)
             {

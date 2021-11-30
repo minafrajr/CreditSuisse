@@ -101,7 +101,6 @@ namespace CreditSuisse.Services
                     throw new FileNotFoundException();
 
                 char[] delim = { ' ' };
-                var campoObrigatorio = true;
                 DateTime referenceDate;
                 int nTrades;
 
@@ -109,8 +108,6 @@ namespace CreditSuisse.Services
                 {
                     while (text.Peek() >= 0)
                     {
-
-
                         var line = text.ReadLine(); //read each line 
 
                         if (line.Equals("")) line = text.ReadLine();
@@ -143,13 +140,14 @@ namespace CreditSuisse.Services
                         }
                     }
                 }
+
+                return tradeList;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-            return tradeList;
         }
     }
 }
